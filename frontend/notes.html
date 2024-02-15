@@ -1,11 +1,43 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Document</title>
 </head>
+
 <body>
     <h2>NOTES PAGE</h2>
+    <div class="add-note">
+        <input type="text" id="title">
+        <input type="text" id="note">
+        <button>add note</button>
+    </div>
+    <div class="note-box" style="box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px">
+        <h3>title of Notes</h3>
+        <p>my notee..</p>
+        <button>edit</button>
+        <button>Delete</button>
+    </div>
 </body>
+<script>
+    const getdata = async () => {
+        try {
+            let token = localStorage.getItem('token');
+            console.log(token);
+            let res = await fetch('https://note-app-8fs0.onrender.com/notes', {
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            });
+            let data = await res.json();
+            console.log(data);
+        } catch (error) {
+            console.log(error);
+        }
+    }
+    getdata();
+</script>
+
 </html>
