@@ -29,7 +29,7 @@ userRouter.post("/login", async (req, res) => {
           "shlok"
         );
         res.cookie("token", accessToken);
-        res.status(200).send({ msg: "Login successful", user });
+        res.status(200).send({ msg: "Login successful", accessToken });
       } else {
         res.status(200).send({ msg: "Login failed" });
       }
