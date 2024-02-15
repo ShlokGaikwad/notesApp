@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Signup Page</title>
 </head>
+
 <body>
     <h2>Signup Page</h2>
     <input type="text" id="username" placeholder="username...">
@@ -32,6 +33,9 @@
             });
             const data = await res.json();
             console.log(data);
+            setTimeout(() => {
+                window.location.href = './login.html'
+            })
         } catch (error) {
             console.log(error);
         }
