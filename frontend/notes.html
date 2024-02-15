@@ -10,34 +10,134 @@
 <body>
     <h2>NOTES PAGE</h2>
     <div class="add-note">
-        <input type="text" id="title">
-        <input type="text" id="note">
-        <button>add note</button>
+        <input type="text" id="title" placeholder="Enter title....">
+        <input type="text" id="body" placeholder="Enter body....">
+        <button onclick="addNote()">add note</button>
     </div>
-    <div class="note-box" style="box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px">
-        <h3>title of Notes</h3>
-        <p>my notee..</p>
-        <button>edit</button>
-        <button>Delete</button>
+    <div class="edit-note">
+        <input type="text" id="id" placeholder="Enter id....">
+        <input type="text" id="editTitle" placeholder="Enter title....">
+        <input type="text" id="editbody" placeholder="Enter body....">
+        <button onclick="editNote()">edit note</button>
+    </div>
+    <div class="note-box" id="main-note" style="box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;">
     </div>
 </body>
 <script>
+
+    let main = document.getElementById('main-note');
+    let editTitle = document.getElementById('editTitle');
+    let editbody = document.getElementById('editbody');
+    let id = document.getElementById('id');
+    
     const getdata = async () => {
         try {
             let token = localStorage.getItem('token');
-            console.log(token);
             let res = await fetch('https://note-app-8fs0.onrender.com/notes', {
                 headers: {
                     "Authorization": `Bearer ${token}`
                 }
             });
             let data = await res.json();
-            console.log(data);
+            appendData(data.note);
+            console.log(data.note);
         } catch (error) {
             console.log(error);
         }
     }
     getdata();
+
+    const createCard = (item) => {
+        const cont = document.createElement('div');
+        cont.style.boxShadow = "rgba(0, 0, 0, 0.35) 0px 5px 15px";
+        cont.style.padding = "10px";
+        const titleN = document.createElement('h3');
+        titleN.innerHTML = item.title;
+        const bodyN = document.createElement('p');
+        bodyN.innerHTML = item.body;
+
+        const editbtn = document.createElement('button');
+        editbtn.innerHTML = "edit";
+        editbtn.addEventListener('click', () => {
+            id.value = item._id;
+            editTitle.value = item.title;
+            editbody.value = item.body;
+        })
+        const deletebtn = document.createElement('button');
+        deletebtn.innerHTML = "delete";
+        deletebtn.addEventListener('click', () => {
+            deleteNote(item._id)
+        })
+
+        cont.append(titleN, bodyN, editbtn, deletebtn);
+        return cont;
+    }
+
+    const appendData = (data) => {
+        main.innerHTML = '';
+        data.map((item) => {
+            main.append(createCard(item))
+        })
+    }
+
+    const addNote = async () => {
+        let title = document.getElementById('title').value;
+        let body = document.getElementById('body').value;
+        try {
+            const payload = {
+                title, body
+            }
+            let res = await fetch("https://note-app-8fs0.onrender.com/notes", {
+                method: "POST",
+                headers: {
+                    "Content-Type": 'application/json',
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`
+                },
+                body: JSON.stringify(payload)
+            })
+            let data = await res.json();
+            // console.log(data);
+            getdata()
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const deleteNote = async (id) => {
+        try {
+            let res = await fetch(`https://note-app-8fs0.onrender.com/notes/${id}`, {
+                method: "DELETE",
+                headers: {
+                    "Content-Type": 'application/json',
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`
+                },
+            });
+            let data = await res.json();
+            // console.log(data);
+            getdata()
+        } catch (error) {
+            console.log(error);
+        }
+    }
+
+    const editNote = async () => {
+        try {
+            let payload = { title: editTitle.value, body: editbody.value }
+            let res = await fetch(`https://note-app-8fs0.onrender.com/notes/${id.value}`, {
+                method: 'PATCH',
+                headers: {
+                    "Content-Type": 'application/json',
+                    "Authorization": `Bearer ${localStorage.getItem("token")}`
+                },
+                body: JSON.stringify(payload)
+            })
+            const data = await res.json();
+            console.log(data);
+            getdata()
+        } catch (error) {
+            console.log(error);
+        }
+    }
 </script>
 
 </html>
